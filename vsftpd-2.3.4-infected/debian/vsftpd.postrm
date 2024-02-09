@@ -1,0 +1,45 @@
+#!/bin/sh
+
+set -e
+
+case "${1}" in
+	remove)
+		_USERNAME="ftp"
+		_GROUPNAME="${_USERNAME}"
+		_DIRECTORY="/srv/ftp"
+
+		if [ -x /usr/sbin/deluser ]
+		then
+			deluser --quiet --system ${_USERNAME}
+		fi
+
+		if [ -x /usr/sbin/delgroup ]
+		then
+			delgroup --quiet --system --only-if-empty ${_GROUPNAME} || true
+		fi
+
+		if [ -d "${_DIRECTORY}" ]
+		then
+			rmdir --ignore-fail-on-non-empty "${_DIRECTORY}" || true
+		fi
+
+		# A user might have manually added vsftp in inetd.conf.
+		if [ -x "$(which update-inetd 2>/dev/null)" ]
+		then
+			update-inetd --disable --pattern vsftpd ftp
+		fi
+		;;
+
+	purge|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+
+		;;
+
+	*)
+		echo "postrm called with unknown argument \`${1}'" >&2
+		exit 1
+		;;
+esac
+
+#DEBHELPER#
+
+exit 0

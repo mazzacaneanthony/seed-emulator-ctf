@@ -28,18 +28,17 @@ as150 = base.createAutonomousSystem(150)
 as150.createNetwork('net0')
 
 # Create a router and connect it to two networks
-as150.createRouter('router0').joinNetwork('net0').joinNetwork('ix100')
+as150.createRouter('router0').joinNetwork('net0').joinNetwork('ix100').addSoftware('telnet')
 
 # Create a host called web and connect it to a network
-# Install git to get vsftpd
-as150.createHost('web').joinNetwork('net0').addSoftware('git')
+as150.createHost('ctf-target').joinNetwork('net0').addSharedFolder('/vsftpd/', '../vsftpd-2.3.4-infected/').appendStartCommand('/vsftpd/install.sh')
 
 # Create a web service on virtual node, give it a name
 # This will install the web service on this virtual node
-web.install('web150')
+web.install('ctf-target')
 
 # Bind the virtual node to a physical node 
-emu.addBinding(Binding('web150', filter = Filter(nodeName = 'web', asn = 150)))
+emu.addBinding(Binding('ctf-target', filter = Filter(nodeName = 'ctf-target', asn = 150)))
 
 
 ###############################################################################

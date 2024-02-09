@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+
+LIBS = -lwrap -lpam -lssl -lcrypto
+ifeq ($(DEB_HOST_ARCH_OS),linux)
+	LIBS += -lcap
+endif
+
+%:
+	dh ${@}
+
+override_dh_auto_build:
+	$(MAKE) CFLAGS="$(CFLAGS) -W -Wshadow" LIBS="$(LIBS)" LINK=""
+
+override_dh_auto_install:
+	# disabled
+
+override_dh_installinit:
+	dh_installinit --update-rcd-params='start 20 2 3 4 5 . stop 80 1 .'

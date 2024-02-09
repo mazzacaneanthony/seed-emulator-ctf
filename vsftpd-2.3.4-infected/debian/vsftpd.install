@@ -1,0 +1,3 @@
+vsftpd			/usr/sbin
+vsftpd.conf		/etc
+debian/local/ftpusers	/etc
